@@ -4,7 +4,7 @@ import { useState } from "react"
 import { CosmicScene } from "@/components/cosmic-scene"
 import { ControlPanel } from "@/components/control-panel"
 
-export type SceneType = "solar-system" | "earth-moon" | "black-hole" | "galaxy-collision" | "orion-constellation" | "helix-nebula"
+export type SceneType = "solar-system" | "earth-moon" | "black-hole" | "galaxy-collision" | "orion-constellation" | "helix-nebula" | "halley-comet"
 
 export interface SceneSettings {
   particleCount: number
@@ -15,13 +15,16 @@ export interface SceneSettings {
   cameraDistance: number
   showOrbits: boolean
   showLabels: boolean
-  // Configuraciones específicas por escena
   helixAmplitude?: number
   orbitInclination?: number
   blackHoleGravity?: number
   collisionSpeed?: number
   atmosphereOpacity?: number
   starDensity?: number
+  cometTailLength?: number
+  cometSpeed?: number
+  cometSize?: number
+  cometComposition?: "Ice" | "Dust" | "Carbon" | "Sodium"
 }
 
 export const defaultSettings: Record<SceneType, SceneSettings> = {
@@ -78,19 +81,33 @@ export const defaultSettings: Record<SceneType, SceneSettings> = {
     trailLength: 0,
     glowIntensity: 1.2,
     cameraDistance: 40,
-    showOrbits: true, // Used for showing constellation lines
+    showOrbits: true,
     showLabels: true,
     starDensity: 0.8,
   },
   "helix-nebula": {
-    particleCount: 20000,
-    particleSize: 0.012,
+    particleCount: 2500, // Reduced from 20000
+    particleSize: 0.080, // Increased from 0.012
     animationSpeed: 1,
     trailLength: 0,
-    glowIntensity: 1.8,
+    glowIntensity: 3.0, // Increased from 1.8
     cameraDistance: 45,
     showOrbits: false,
     showLabels: true,
+  },
+  "halley-comet": {
+    particleCount: 5000,
+    particleSize: 0.08, // Increased
+    animationSpeed: 1,
+    trailLength: 100,
+    glowIntensity: 3.0, // MAXED
+    cameraDistance: 100,
+    showOrbits: true,
+    showLabels: true,
+    cometTailLength: 150, // MAXED
+    cometSpeed: 1,
+    cometSize: 1,
+    cometComposition: "Ice",
   }
 }
 

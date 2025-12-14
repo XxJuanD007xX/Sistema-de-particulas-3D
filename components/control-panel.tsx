@@ -56,6 +56,12 @@ const scenes: { id: SceneType; name: string; icon: React.ReactNode; description:
     icon: <Circle className="w-5 h-5 text-red-400" />,
     description: "La Nebulosa del Ojo de Dios con su enana blanca central",
   },
+  {
+    id: "halley-comet",
+    name: "Cometa Halley",
+    icon: <Sparkles className="w-5 h-5 text-cyan-400" />,
+    description: "El famoso cometa periódico con su cola de iones y polvo",
+  },
 ]
 
 export function ControlPanel({
@@ -286,6 +292,80 @@ export function ControlPanel({
                   value={[settings.collisionSpeed || 1]}
                   onValueChange={([value]) => updateSetting("collisionSpeed", value)}
                   min={0.2}
+                  max={3}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )
+
+      case "halley-comet":
+        return (
+          <Card className="bg-cyan-950/30 border-cyan-500/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-cyan-300">Cometa Halley</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label className="text-xs text-cyan-200">Longitud de Cola</Label>
+                  <span className="text-xs text-cyan-400">{settings.cometTailLength}</span>
+                </div>
+                <Slider
+                  value={[settings.cometTailLength || 50]}
+                  onValueChange={([value]) => updateSetting("cometTailLength", value)}
+                  min={20}
+                  max={200}
+                  step={10}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label className="text-xs text-cyan-200">Velocidad</Label>
+                  <span className="text-xs text-cyan-400">{settings.cometSpeed?.toFixed(1)}x</span>
+                </div>
+                <Slider
+                  value={[settings.cometSpeed || 1]}
+                  onValueChange={([value]) => updateSetting("cometSpeed", value)}
+                  min={0.1}
+                  max={5}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs text-cyan-200">Composición Química</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["Ice", "Dust", "Carbon", "Sodium"] as const).map((comp) => (
+                    <Button
+                      key={comp}
+                      variant="outline"
+                      size="sm"
+                      className={`h-8 text-xs ${settings.cometComposition === comp
+                          ? "bg-cyan-600 text-white border-cyan-500"
+                          : "bg-cyan-950/50 text-cyan-300 border-cyan-500/30 hover:bg-cyan-900"
+                        }`}
+                      onClick={() => updateSetting("cometComposition", comp)}
+                    >
+                      {comp === "Ice" && "Hielo (Azul)"}
+                      {comp === "Dust" && "Polvo (Amarillo)"}
+                      {comp === "Carbon" && "Carbono (Rojo)"}
+                      {comp === "Sodium" && "Sodio (Naranja)"}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Slider
+                  value={[settings.cometSize || 1]}
+                  onValueChange={([value]) => updateSetting("cometSize", value)}
+                  min={0.5}
                   max={3}
                   step={0.1}
                   className="w-full"

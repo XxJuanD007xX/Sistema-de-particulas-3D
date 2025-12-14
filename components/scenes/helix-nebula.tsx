@@ -19,48 +19,64 @@ function HelixStructure({ settings }: { settings: SceneSettings }) {
         const col = new Float32Array(count * 3)
 
         for (let i = 0; i < count; i++) {
-            // Modelo mejorado para "Ojo de Dios" (NGC 7293)
-            // Estructura de disco aplanado con agujero central (pupila)
+            // Modelo "Ojo de Dios" con irregularidades orgánicas
 
-            const rRandom = Math.pow(Math.random(), 0.5) // Distribución para concentrar más en bordes
-            const angle = Math.random() * Math.PI * 2
+            // Ángulo base
+            let angle = Math.random() * Math.PI * 2
 
-            // Forma elíptica: estiramos más en X que en Y para dar forma de ojo
-            const radiusBase = 12 + rRandom * 25
+            // Introduce irregularidad en el radio interior para que no sea un círculo perfecto
+            // "Ruido" radial basado en el ángulo
+            const innerNoise = Math.sin(angle * 5) * 2.0 + Math.cos(angle * 12) * 1.5 + Math.sin(angle * 30) * 0.5
+            const minRadius = 10 + innerNoise // Radio base mínimo variable
 
-            // "Pupila" vacía en el centro
-            if (radiusBase < 8) continue;
+            // Generación de radio con probabilidad sesgada hacia el exterior
+            const rRandom = Math.pow(Math.random(), 0.6)
+            let radius = minRadius + rRandom * 30 // Extensión de la nebulosa
+
+            // Filamentos: agrupar partículas en ciertos ángulos
+            const filamentNoise = Math.sin(angle * 8) + Math.cos(angle * 20)
+            if (filamentNoise > 1.0) {
+                // Zonas más densas
+                radius += (Math.random() - 0.5) * 2
+            }
 
             const squashFactor = 0.7 // Achatamiento vertical
-            const x = Math.cos(angle) * radiusBase
-            const y = Math.sin(angle) * radiusBase * squashFactor
 
-            // Profundidad (cilindro hueco visto de frente)
-            // Las partes externas del "ojo" están más lejos en Z
-            const z = (Math.random() - 0.5) * 15 * (1 - (radiusBase / 40))
+            // Perturbación de posición (turbulencia)
+            const turbulenceX = (Math.random() - 0.5) * 1.5
+            const turbulenceY = (Math.random() - 0.5) * 1.5
+
+            const x = Math.cos(angle) * radius + turbulenceX
+            const y = Math.sin(angle) * radius * squashFactor + turbulenceY
+
+            // Profundidad compleja: disco alabeado
+            // Zonas externas se curvan un poco
+            let z = (Math.random() - 0.5) * 8 * (1 - (radius / 50))
+            z += Math.sin(angle * 2 + radius * 0.1) * 3 // Alabeo suave
 
             pos[i * 3] = x
             pos[i * 3 + 1] = y
             pos[i * 3 + 2] = z
 
-            // Gradiente de color complejo para el efecto de iris
-            const distFromCenter = Math.sqrt(x * x + (y / squashFactor) * (y / squashFactor))
+            // Gradiente de color basado en distancia REAL al centro (incluyendo distorsiones)
+            // Calculamos radio normalizado para colorear
+            const distRatio = (radius - minRadius) / 30
 
-            if (distFromCenter < 18) {
-                // Región interna (Azul/Verde azulado - Oxígeno)
-                col[i * 3] = 0.0 + Math.random() * 0.1
+            if (distRatio < 0.2) {
+                // Núcleo interno (Azul brillante / Turquesa)
+                col[i * 3] = 0.2 + Math.random() * 0.2
+                col[i * 3 + 1] = 0.6 + Math.random() * 0.4
+                col[i * 3 + 2] = 0.8 + Math.random() * 0.2
+            } else if (distRatio < 0.6) {
+                // Zona media (Naranja vibrante / Oro)
+                col[i * 3] = 1.0
                 col[i * 3 + 1] = 0.4 + Math.random() * 0.4
-                col[i * 3 + 2] = 0.6 + Math.random() * 0.4
-            } else if (distFromCenter < 28) {
-                // Región media (Naranja/Rojizo - Nitrógeno/Hidrógeno)
-                col[i * 3] = 0.8 + Math.random() * 0.2
-                col[i * 3 + 1] = 0.2 + Math.random() * 0.3
-                col[i * 3 + 2] = 0.0
+                col[i * 3 + 2] = 0.1
             } else {
-                // Región externa (Rojo oscuro/Rosado)
-                col[i * 3] = 0.6 + Math.random() * 0.2
-                col[i * 3 + 1] = 0.0
-                col[i * 3 + 2] = 0.1 + Math.random() * 0.2
+                // Borde exterior (Rojo profundo / Rosa)
+                col[i * 3] = 0.8 + Math.random() * 0.2
+                col[i * 3 + 1] = 0.1
+                col[i * 3 + 2] = 0.3 + Math.random() * 0.3
             }
         }
 
